@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { join } from "node:path";
-import { App, formatDue, orderAssignments } from "../src/app.ts";
+import { App, formatDue, orderAssignments, relevantColumns } from "../src/app.ts";
 import { BasecampClient, BasecampError, parseAssignments, parseEnvelope, spawnBasecamp, type Assignment } from "../src/basecamp.ts";
 import { buildHandoffCommand, buildHandoffPrompt, type HandoffMode } from "../src/handoff.ts";
 import { parseKeys } from "../src/keys.ts";
@@ -118,6 +118,7 @@ describe("app", () => {
       requestRender: () => {},
       quit: () => {},
       today: () => "2026-11-12",
+      relevantColumnTitles: [],
       selectionDelayMilliseconds: 0,
     });
     const screen = () => app.render(100, 24).map(stripStyles);
@@ -180,4 +181,10 @@ test("names an attachment by its caption, else its file name", () => {
   expect(htmlToText('<bc-attachment caption="" filename="shot.png"><figure></figure></bc-attachment>')).toBe("[shot.png]");
   expect(htmlToText('<bc-attachment caption="Before" filename="shot.png"></bc-attachment>')).toBe("[Before]");
   expect(htmlToText("<bc-attachment sgid=\"x\"></bc-attachment>")).toBe("[attachment]");
+});
+
+test("offers only the chosen columns, plus the card's current one", () => {
+  const columns = [{ id: 1, title: "Triage" }, { id: 2, title: "Ideas" }, { id: 3, title: "In progress" }, { id: 4, title: "Done" }];
+  expect(relevantColumns(columns, [], 2)).toEqual(columns);
+  expect(relevantColumns(columns, ["done", " In Progress "], 2).map((column) => column.title)).toEqual(["Ideas", "In progress", "Done"]);
 });

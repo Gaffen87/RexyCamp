@@ -56,6 +56,7 @@ function runApp(): void {
       process.exit(0);
     },
     today: localDate,
+    relevantColumnTitles: (process.env.REXYCAMP_COLUMNS ?? "").split("\n").filter((title) => title.trim() !== ""),
     selectionDelayMilliseconds: 120,
   });
 

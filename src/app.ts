@@ -18,6 +18,8 @@ export interface AppDependencies {
   requestRender(): void;
   quit(): void;
   today(): string;
+  // Titles of the columns to offer; empty offers every column of the card table.
+  relevantColumnTitles: string[];
   selectionDelayMilliseconds: number;
 }
 
@@ -48,6 +50,12 @@ export function formatDue(dueOn: string | null, today: string): DueLabel | null 
   const monthName = MONTH_NAMES[(month ?? 1) - 1] ?? "";
   const dateText = `${monthName} ${day}${String(year) === today.slice(0, 4) ? "" : ` ${year}`}`;
   return { text: dateText, colorCodes: dueOn < today ? [SGR.red] : [SGR.dim] };
+}
+
+export function relevantColumns(columns: CardColumn[], relevantTitles: string[], currentColumnId: number | null): CardColumn[] {
+  if (relevantTitles.length === 0) return columns;
+  const normalizedTitles = new Set(relevantTitles.map((title) => title.trim().toLowerCase()));
+  return columns.filter((column) => column.id === currentColumnId || normalizedTitles.has(column.title.trim().toLowerCase()));
 }
 
 function errorMessage(error: unknown): string {
@@ -153,8 +161,8 @@ export class App {
     try {
       const columns = await this.dependencies.client.listColumns(assignment);
       if (this.selected()?.id !== assignment.id) return;
-      this.columns = columns;
-      this.columnCursor = Math.max(0, columns.findIndex((column) => column.id === assignment.parentId));
+      this.columns = relevantColumns(columns, this.dependencies.relevantColumnTitles, assignment.parentId);
+      this.columnCursor = Math.max(0, this.columns.findIndex((column) => column.id === assignment.parentId));
     } catch (error) {
       if (this.selected()?.id === assignment.id) this.columnsNote = errorMessage(error);
     }

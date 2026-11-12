@@ -60,7 +60,7 @@ local function check_rexycamp_runs()
   if not result.ok then error((result.stderr:gsub("%s+$", "")), 0) end
 end
 
-local function open_rexycamp(focused_block_id, window_id, placement, direction, ratio)
+local function open_rexycamp(focused_block_id, window_id, placement, direction, ratio, columns)
   local pane = rex.layout.block{
     flavor = TERMINAL .. ".shell",
     label = PANE_LABEL,
@@ -70,6 +70,7 @@ local function open_rexycamp(focused_block_id, window_id, placement, direction, 
         "REXYCAMP_BASECAMP_BIN=" .. BASECAMP_BIN,
         "REXYCAMP_REX_BIN=" .. REX_BIN,
         "REXYCAMP_CLAUDE_BIN=" .. CLAUDE_BIN,
+        "REXYCAMP_COLUMNS=" .. table.concat(columns, "\n"),
         REXYCAMP_BIN,
       },
       cwd = focused_block_id and working_directory(focused_block_id),
@@ -115,6 +116,13 @@ return function(settings)
   if not SPLIT_DIRECTIONS[direction] then
     error("config: unknown direction " .. tostring(direction) .. "; use right or down", 0)
   end
+  local columns = settings.columns or {}
+  if type(columns) ~= "table" then
+    error("config: columns must be a list of column titles, as in: columns = { \"Done\" }", 0)
+  end
+  for _, column_title in ipairs(columns) do
+    if type(column_title) ~= "string" then error("config: every column must be a title in quotes", 0) end
+  end
   if type(ratio) ~= "number" or ratio <= 0 or ratio >= 1 then
     error("config: ratio must be a number between 0 and 1", 0)
   end
@@ -137,7 +145,7 @@ return function(settings)
       local open_pane_ids = open_rexycamp_panes(blocks, window_id)
       if #open_pane_ids == 0 then
         check_rexycamp_runs()
-        return open_rexycamp(ctx.block_id, window_id, placement, direction, ratio)
+        return open_rexycamp(ctx.block_id, window_id, placement, direction, ratio, columns)
       end
       for _, pane_id in ipairs(open_pane_ids) do
         must(rex.call("block.close", { session_id = ctx.session_id, block_id = pane_id }))

@@ -5,6 +5,7 @@ local settings = {
   -- placement = "overlay", -- overlay, split, zoomed, or tab
   -- direction = "right", -- of split and zoomed: right or down
   -- ratio = 0.5, -- the share of the split that RexyCamp gets
+  -- columns = { "Triage", "In progress", "Done" }, -- the columns to show and move to; all when unset
 }
 
 local loaded, load_error = pcall(function() require("rexycamp_toggle")(settings) end)

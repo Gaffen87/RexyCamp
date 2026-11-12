@@ -60,6 +60,7 @@ Edit `~/.config/rex/rexycamp.lua`, then run `rex config reload`.
 | `placement` | `"overlay"` | `overlay` (floating), `split`, `zoomed`, `tab` |
 | `direction` | `"right"` | `right`, `down` (for `split` and `zoomed`) |
 | `ratio` | `0.5` | The share of the split that RexyCamp gets, between 0 and 1 |
+| `columns` | all | The titles of the columns to show and move to, such as `{ "Triage", "In progress", "Done" }`. A card's current column always shows |
 
 The action is also in the command palette as **Toggle RexyCamp**, and takes a one-off placement:
 
