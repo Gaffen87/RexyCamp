@@ -1,0 +1,17 @@
+{
+  "name": "rexycamp",
+  "version": "0.1.0",
+  "description": "A lazygit-style terminal app for your Basecamp assignments, made to run in a Rex pane",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/main.ts",
+    "build": "bun build src/main.ts --compile --outfile dist/rexycamp",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.0",
+    "typescript": "^5.9.0"
+  }
+}
