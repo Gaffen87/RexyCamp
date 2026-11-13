@@ -25,7 +25,7 @@ Press <kbd>Cmd</kbd>+<kbd>B</kbd> to open RexyCamp in a floating pane. Press it 
 
 | Key | Action |
 | --- | --- |
-| <kbd>f</kbd> | Fix: hand the assignment to Claude Code in a new Rex tab |
+| <kbd>f</kbd> | Fix: hand the assignment to Claude Code in a new Rex tab and a new git worktree |
 | <kbd>p</kbd> | Plan: the same, with Claude Code in plan mode |
 | <kbd>m</kbd> | Move the card: choose a column with <kbd>j</kbd>/<kbd>k</kbd>, <kbd>Enter</kbd> to move, <kbd>Esc</kbd> to cancel |
 | <kbd>o</kbd> | Open the assignment in Basecamp |
@@ -34,7 +34,7 @@ Press <kbd>Cmd</kbd>+<kbd>B</kbd> to open RexyCamp in a floating pane. Press it 
 | <kbd>Tab</kbd>, <kbd>h</kbd>/<kbd>l</kbd>, <kbd>1</kbd>–<kbd>3</kbd> | Change panel |
 | <kbd>q</kbd> | Quit |
 
-Fix and plan start Claude Code in the directory of the pane you opened RexyCamp from, so open it from the repository the assignment is about. Claude Code gets the title, link, open steps and description as its prompt.
+Fix and plan start Claude Code in a new git worktree (`claude --worktree`) of the directory of the pane you opened RexyCamp from, so open it from the repository the assignment is about. The worktree is named after the assignment, such as `basecamp-123-fix-the-login-loop`. Claude Code gets the title, link, open steps and description as its prompt.
 
 ## Install
 

@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { join } from "node:path";
 import { App, formatDue, orderAssignments, relevantColumns } from "../src/app.ts";
 import { BasecampClient, BasecampError, parseAssignments, parseEnvelope, spawnBasecamp, type Assignment } from "../src/basecamp.ts";
-import { buildHandoffCommand, buildHandoffPrompt, type HandoffMode } from "../src/handoff.ts";
+import { buildHandoffCommand, buildHandoffPrompt, worktreeName, type HandoffMode } from "../src/handoff.ts";
 import { parseKeys } from "../src/keys.ts";
 import { displayWidth, fitToWidth, htmlToText, truncateToWidth, wrapText } from "../src/text.ts";
 
@@ -67,9 +67,12 @@ describe("hand-off", () => {
     const environment = { rexBinary: "/bin/rex", claudeBinary: "/bin/claude", rexSessionId: "session:1", workingDirectory: "/repo" };
     expect(buildHandoffCommand("plan", assignment, "PROMPT", environment)).toEqual([
       "/bin/rex", "window", "new", "-s", "session:1", "plan: Fix the login loop", "-c", "/repo",
-      "--", "/bin/claude", "--permission-mode", "plan", "PROMPT",
+      "--", "/bin/claude", "--worktree", "basecamp-7-fix-the-login-loop", "--permission-mode", "plan", "PROMPT",
     ]);
-    expect(buildHandoffCommand("fix", assignment, "PROMPT", environment).slice(-2)).toEqual(["/bin/claude", "PROMPT"]);
+    expect(buildHandoffCommand("fix", assignment, "PROMPT", environment).slice(-4))
+      .toEqual(["/bin/claude", "--worktree", "basecamp-7-fix-the-login-loop", "PROMPT"]);
+    expect(worktreeName({ ...assignment, title: "'Søgning' æøå!" })).toBe("basecamp-7-soegning-aeoeaa");
+    expect(worktreeName({ ...assignment, title: "日本語" })).toBe("basecamp-7");
   });
 
   test("puts the title, link, open steps and description in the prompt", () => {

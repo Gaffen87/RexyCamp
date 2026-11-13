@@ -38,6 +38,19 @@ export function buildHandoffPrompt(mode: HandoffMode, assignment: Assignment, de
   return promptLines.join("\n");
 }
 
+export function worktreeName(assignment: Assignment): string {
+  const titleSlug = assignment.title
+    .toLowerCase()
+    .replace(/[æøå]/g, (letter) => ({ æ: "ae", ø: "oe", å: "aa" })[letter] ?? letter)
+    .normalize("NFKD")
+    .replace(/\p{M}/gu, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40)
+    .replace(/-+$/, "");
+  return titleSlug === "" ? `basecamp-${assignment.id}` : `basecamp-${assignment.id}-${titleSlug}`;
+}
+
 export function buildHandoffCommand(
   mode: HandoffMode,
   assignment: Assignment,
@@ -46,7 +59,8 @@ export function buildHandoffCommand(
 ): string[] {
   const tabLabel = `${mode}: ${truncateToWidth(assignment.title, 24)}`;
   const sessionArguments = environment.rexSessionId ? ["-s", environment.rexSessionId] : [];
-  const claudeArguments = mode === "plan" ? ["--permission-mode", "plan"] : [];
+  // --worktree takes an optional name, so one is always given to keep it from reading the prompt as the name.
+  const claudeArguments = ["--worktree", worktreeName(assignment), ...(mode === "plan" ? ["--permission-mode", "plan"] : [])];
   return [
     environment.rexBinary, "window", "new", ...sessionArguments, tabLabel,
     "-c", environment.workingDirectory,
